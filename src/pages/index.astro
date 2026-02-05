@@ -1,0 +1,157 @@
+---
+import profile from "../data/profile.json";
+import "../styles/global.css";
+
+const { name, title, summary, email, github, about, skills, experience, upcoming, projects } = profile;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{name} — {title}</title>
+    <meta name="description" content={summary} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero section" style="--delay: 1">
+        <div>
+          <div class="eyebrow">Research With Production Impact</div>
+          <h1>{name}</h1>
+          <p>{summary}</p>
+          <div class="hero-actions">
+            <a class="btn primary" href={github} target="_blank" rel="noreferrer">
+              View GitHub
+            </a>
+            <a class="btn ghost" href={`mailto:${email}`}>
+              Email Me
+            </a>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Focus</div>
+          <h2>{title}</h2>
+          <p>{about}</p>
+          <div class="tags" style="margin-top: 16px;">
+            {skills?.map((skill) => (
+              <span class="tag">{skill}</span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="projects" class="section" style="--delay: 2">
+        <div class="split">
+          <div>
+            <div class="eyebrow">Projects</div>
+            <h2>Research That Ships</h2>
+            <p>
+              A compact set of applied research projects built with production impact in mind —
+              from evaluation design to robust, real‑world performance. The flagship demo will
+              support live play once the model endpoint is ready.
+            </p>
+          </div>
+          <div class="projects">
+            {projects?.map((project) => (
+              <article class="card project">
+                <div>
+                  <div class="eyebrow">Current Project</div>
+                  <h3 class="project-title">{project.title}</h3>
+                  <p>{project.summary}</p>
+                </div>
+                <div class="tags">
+                  {project.tags?.map((tag) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+                <div class="hero-actions">
+                  {project.playUrl ? (
+                    <a class="btn primary" href={project.playUrl} target="_blank" rel="noreferrer">
+                      Play the Model
+                    </a>
+                  ) : (
+                    <span class="btn primary disabled">Play the Model · Coming Soon</span>
+                  )}
+                  {project.repo ? (
+                    <a class="btn ghost" href={project.repo} target="_blank" rel="noreferrer">
+                      View Repo
+                    </a>
+                  ) : null}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section" style="--delay: 3">
+        <div class="card">
+          <div class="eyebrow">About</div>
+          <h2>Research that translates to production impact</h2>
+          <p>
+            I focus on meaningful research that improves real systems: designing evaluation that
+            reflects production realities, handling messy data, and shipping models that hold up
+            under real‑world constraints.
+          </p>
+        </div>
+      </section>
+
+      <section id="experience" class="section" style="--delay: 4">
+        <div class="card">
+          <div class="eyebrow">Experience Snapshot</div>
+          <h2>Built for real‑world ML delivery</h2>
+          <div style="display: grid; gap: 20px; margin-top: 16px;">
+            {experience?.map((role) => (
+              <div>
+                <div class="eyebrow">
+                  {role.role} · {role.company} · {role.period}
+                </div>
+                <ul style="margin: 10px 0 0; padding-left: 18px; color: var(--ink-soft); line-height: 1.6;">
+                  {role.highlights?.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {upcoming?.visible ? (
+        <section id="upcoming" class="section" style="--delay: 5">
+          <div class="card">
+            <div class="eyebrow">Upcoming</div>
+            <h2>{upcoming.title}</h2>
+            <p>{upcoming.summary}</p>
+            <div class="tags" style="margin-top: 16px;">
+              {upcoming.tags?.map((tag) => (
+                <span class="tag">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section id="contact" class="section" style="--delay: 6">
+        <div class="card contact-card">
+          <div class="eyebrow">Contact</div>
+          <h2>Let’s talk</h2>
+          <p>If you want to collaborate, hire, or chat about alignment work, reach out.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href={`mailto:${email}`}>
+              Email {name}
+            </a>
+            <a class="btn ghost" href={github} target="_blank" rel="noreferrer">
+              GitHub Profile
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        Built with Astro · {new Date().getFullYear()}
+      </footer>
+    </main>
+  </body>
+</html>

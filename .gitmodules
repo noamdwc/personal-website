@@ -1,0 +1,3 @@
+[submodule "hf_space_repo"]
+	path = hf_space_repo
+	url = git@hf.co:spaces/noamdwc/grpo-chess-api

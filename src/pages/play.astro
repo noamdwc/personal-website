@@ -1,0 +1,68 @@
+---
+import profile from "../data/profile.json";
+import "../styles/global.css";
+import playScript from "../scripts/play.js?url";
+
+const { name } = profile;
+const playApiBase = import.meta.env.PUBLIC_PLAY_API_BASE || profile.playApiBase;
+
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Play the GRPO Chess Model · {name}</title>
+    <meta
+      name="description"
+      content="Play a game against the GRPO chess model."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/chessground/chessground.base.css" />
+    <link rel="stylesheet" href="/chessground/chessground.brown.css" />
+    <link rel="stylesheet" href="/chessground/chessground.cburnett.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="section" style="--delay: 1">
+        <div class="eyebrow">Playable Demo</div>
+        <h1 style="font-family: 'Space Grotesk', Arial, sans-serif; margin-top: 10px;">
+          Play the GRPO Chess Model
+        </h1>
+        <p style="max-width: 64ch; color: var(--ink-soft);">
+          Make a move and the model will respond. This demo uses a hosted inference API
+          and will feel best once the model checkpoint is packaged and deployed.
+        </p>
+      </section>
+
+      <section class="section" style="--delay: 2">
+        <div class="card play-shell">
+          <div class="play-board">
+            <div
+              id="board"
+              class="board"
+              data-api-base={playApiBase}
+            ></div>
+          </div>
+          <div class="play-panel">
+            <div class="eyebrow">Controls</div>
+            <div class="play-actions">
+              <button class="btn primary" id="new-game">New Game</button>
+              <button class="btn ghost" id="flip-board">Flip Board</button>
+            </div>
+            <div class="play-status" id="status">
+              Waiting for your move…
+            </div>
+            <div class="play-moves">
+              <div class="eyebrow">Moves</div>
+              <ol id="move-list"></ol>
+            </div>
+            <a class="btn ghost" href="/">Back to Home</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src={playScript}></script>
+  </body>
+</html>

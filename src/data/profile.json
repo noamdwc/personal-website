@@ -41,14 +41,15 @@
     "summary": "Using an LLM‑as‑classifier to detect jailbreak attacks and gate unsafe prompts before they reach models.",
     "tags": ["LLM Safety", "Classifier", "Security"]
   },
+  "playApiBase": "https://noamdwc-grpo-chess-api.hf.space",
   "projects": [
     {
       "title": "grpo-chess-model",
       "summary": "Independent applied research on a GRPO‑based chess model. End‑to‑end deep RL pipeline with a transformer, GRPO on noisy rewards, data sampling, and reproducible evaluation tracking with multi‑level Stockfish benchmarks.",
       "tags": ["GRPO", "Chess", "PyTorch", "W&B"],
-      "repo": "https://github.com/your-handle/grpo-chess-model",
-      "playUrl": null,
-      "status": "coming_soon"
+      "repo": "https://github.com/noamdwc/grpo_chess/",
+      "playUrl": "/play",
+      "status": "live"
     }
   ]
 }

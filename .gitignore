@@ -3,3 +3,10 @@ dist
 .astro
 .DS_Store
 *.log
+
+# Local development
+.env
+.codex/
+checkpoints/
+model/
+test-results/

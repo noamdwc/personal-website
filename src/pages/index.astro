@@ -2,7 +2,7 @@
 import profile from "../data/profile.json";
 import "../styles/global.css";
 
-const { name, title, summary, email, github, about, skills, experience, upcoming, projects } = profile;
+const { name, title, summary, email, github, about, skills, experience, projects } = profile;
 ---
 <!doctype html>
 <html lang="en">
@@ -47,16 +47,15 @@ const { name, title, summary, email, github, about, skills, experience, upcoming
             <div class="eyebrow">Projects</div>
             <h2>Research That Ships</h2>
             <p>
-              A compact set of applied research projects built with production impact in mind —
-              from evaluation design to robust, real‑world performance. The flagship demo will
-              support live play once the model endpoint is ready.
+              Applied research projects built with production impact in mind —
+              from evaluation design to robust, real‑world performance.
             </p>
           </div>
           <div class="projects">
             {projects?.map((project) => (
               <article class="card project">
                 <div>
-                  <div class="eyebrow">Current Project</div>
+                  <div class="eyebrow">Project</div>
                   <h3 class="project-title">{project.title}</h3>
                   <p>{project.summary}</p>
                 </div>
@@ -118,20 +117,7 @@ const { name, title, summary, email, github, about, skills, experience, upcoming
         </div>
       </section>
 
-      {upcoming?.visible ? (
-        <section id="upcoming" class="section" style="--delay: 5">
-          <div class="card">
-            <div class="eyebrow">Upcoming</div>
-            <h2>{upcoming.title}</h2>
-            <p>{upcoming.summary}</p>
-            <div class="tags" style="margin-top: 16px;">
-              {upcoming.tags?.map((tag) => (
-                <span class="tag">{tag}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-      ) : null}
+
 
       <section id="contact" class="section" style="--delay: 6">
         <div class="card contact-card">

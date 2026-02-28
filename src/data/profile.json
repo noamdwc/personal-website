@@ -35,20 +35,43 @@
       ]
     }
   ],
-  "upcoming": {
-    "visible": false,
-    "title": "llm-gatekeeping",
-    "summary": "Using an LLM‑as‑classifier to detect jailbreak attacks and gate unsafe prompts before they reach models.",
-    "tags": ["LLM Safety", "Classifier", "Security"]
-  },
   "playApiBase": "https://noamdwc-grpo-chess-api.hf.space",
   "projects": [
     {
       "title": "grpo-chess-model",
-      "summary": "Independent applied research on a GRPO‑based chess model. End‑to‑end deep RL pipeline with a transformer, GRPO on noisy rewards, data sampling, and reproducible evaluation tracking with multi‑level Stockfish benchmarks.",
-      "tags": ["GRPO", "Chess", "PyTorch", "W&B"],
+      "summary": "End-to-end deep RL pipeline for training chess-playing transformers via GRPO self-play. Includes configurable transformer architecture, Stockfish reward evaluation, distillation, and multi-level benchmarking.",
+      "tags": [
+        "GRPO",
+        "Chess",
+        "PyTorch",
+        "Distillation",
+        "W&B"
+      ],
       "repo": "https://github.com/noamdwc/grpo_chess/",
       "playUrl": "/play",
+      "status": "live"
+    },
+    {
+      "title": "llm-gatekeeping",
+      "summary": "Hierarchical classifier for detecting adversarial prompt injection and jailbreak attacks. Three-level classification (binary → category → type) with ML, LLM, and hybrid routing on the Mindgard dataset.",
+      "tags": [
+        "LLM Safety",
+        "Classifier",
+        "DVC",
+        "Hybrid ML/LLM"
+      ],
+      "repo": "https://github.com/noamdwc/llm-gatekeeping/",
+      "status": "live"
+    },
+    {
+      "title": "llm-trajectories",
+      "summary": "Research pipeline for modelling LLM text generation as semantic trajectories in embedding space. Group-aware cross-validation to prevent data leakage from paired prompt structure.",
+      "tags": [
+        "Embeddings",
+        "NLP",
+        "Research"
+      ],
+      "repo": "https://github.com/noamdwc/llm-trajectories/",
       "status": "live"
     }
   ]

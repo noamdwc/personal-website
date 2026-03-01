@@ -1,7 +1,7 @@
 ---
 import profile from "../data/profile.json";
 import "../styles/global.css";
-import playScript from "../scripts/play.js?url";
+
 
 const { name } = profile;
 const playApiBase = import.meta.env.PUBLIC_PLAY_API_BASE || profile.playApiBase;
@@ -64,6 +64,8 @@ const base = import.meta.env.BASE_URL;
       </section>
     </main>
 
-    <script type="module" src={playScript}></script>
+    <script>
+      import "../scripts/play.js";
+    </script>
   </body>
 </html>

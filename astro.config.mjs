@@ -2,5 +2,6 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   output: "static",
-  site: "https://your-username.github.io"
+  site: "https://noamdwc.github.io",
+  base: "/personal-website"
 });

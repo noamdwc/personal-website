@@ -7,7 +7,6 @@ import chess
 import torch
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from huggingface_hub import hf_hub_download
 from pydantic import BaseModel
 from safetensors.torch import load_file
 
@@ -41,10 +40,9 @@ class MoveResponse(BaseModel):
     fen: str
 
 
-MODEL_REPO = os.environ.get("MODEL_REPO", "noamdwc/grpo-chess-model")
 WEIGHTS_FILE = os.environ.get("WEIGHTS_FILE", "model.safetensors")
 CONFIG_FILE = os.environ.get("CONFIG_FILE", "config.json")
-LOCAL_MODEL_DIR = os.environ.get("LOCAL_MODEL_DIR")
+LOCAL_MODEL_DIR = os.environ.get("LOCAL_MODEL_DIR", "/app/model")
 
 _model = None
 _config = None
@@ -55,29 +53,13 @@ def load_model():
     if _model is not None:
         return _model
 
-    # Local-first mode for deterministic local testing.
-    if LOCAL_MODEL_DIR:
-        base = Path(LOCAL_MODEL_DIR)
-        weights_path = str(base / WEIGHTS_FILE)
-        config_path = str(base / CONFIG_FILE)
-        if not Path(weights_path).exists():
-            raise FileNotFoundError(f"Weights not found at {weights_path}")
-        if not Path(config_path).exists():
-            raise FileNotFoundError(f"Config not found at {config_path}")
-    else:
-        token = os.environ.get("HF_TOKEN")
-        weights_path = hf_hub_download(
-            repo_id=MODEL_REPO,
-            filename=WEIGHTS_FILE,
-            repo_type="model",
-            token=token,
-        )
-        config_path = hf_hub_download(
-            repo_id=MODEL_REPO,
-            filename=CONFIG_FILE,
-            repo_type="model",
-            token=token,
-        )
+    base = Path(LOCAL_MODEL_DIR)
+    weights_path = str(base / WEIGHTS_FILE)
+    config_path = str(base / CONFIG_FILE)
+    if not Path(weights_path).exists():
+        raise FileNotFoundError(f"Weights not found at {weights_path}")
+    if not Path(config_path).exists():
+        raise FileNotFoundError(f"Config not found at {config_path}")
 
     import json
     from grpo_self_play.models import ChessTransformer, ChessTransformerConfig
@@ -114,7 +96,7 @@ app.add_middleware(
 def health():
     return {
         "status": "ok",
-        "mode": "local" if LOCAL_MODEL_DIR else "huggingface",
+        "model_dir": LOCAL_MODEL_DIR,
     }
 
 

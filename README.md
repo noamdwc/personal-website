@@ -54,36 +54,32 @@ Workflow:
    ```bash
    python tools/export_checkpoint.py --checkpoint checkpoints/model.ckpt --out-dir model
    ```
-3. Upload `model/model.safetensors` + `model/config.json` to your HF model repo.
-4. Create a HF Space using `hf_space/` and copy `grpo_self_play/` + `searchless_chess_model/` into the Space.
+3. Copy model files into the HF Space repo:
+   ```bash
+   cp -r model/ hf_space_repo/model/
+   ```
+4. Push `hf_space_repo/` to your HF Space — the Docker image bakes the model in at build time.
 
 ## Local Docker API Test
-You can test the model API locally without Hugging Face.
+You can test the model API locally.
 
-1. Build the API image:
+1. Copy model files into the Space repo (if not already):
+   ```bash
+   cp -r model/ hf_space_repo/model/
+   ```
+2. Build the API image (model is baked in):
    ```bash
    docker build -t grpo-chess-api ./hf_space_repo
    ```
-2. Run the API locally (local model files mounted, no network dependency):
-   - Put `model.safetensors` and `config.json` under `./model`
+3. Run the API locally:
    ```bash
-   docker run --rm -p 7860:7860 \
-     -v "$(pwd)/model:/models:ro" \
-     -e LOCAL_MODEL_DIR=/models \
-     grpo-chess-api
+   docker run --rm -p 7860:7860 grpo-chess-api
    ```
-   Optional fallback (load from Hugging Face instead of local files):
-   ```bash
-   docker run --rm -p 7860:7860 \
-     -e MODEL_REPO=noamdwc/grpo-chess-model \
-     -e HF_TOKEN=<your_hf_token_if_repo_is_private> \
-     grpo-chess-api
-   ```
-3. Check health:
+4. Check health:
    ```bash
    curl http://127.0.0.1:7860/health
    ```
-4. Run API test against local Docker:
+5. Run API test against local Docker:
    ```bash
    npm run test:api:local
    ```

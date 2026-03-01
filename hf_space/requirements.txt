@@ -3,7 +3,6 @@ uvicorn
 torch
 safetensors
 python-chess
-huggingface_hub
 pytorch_lightning
 mcp>=0.9.0
 wandb>=0.16.0

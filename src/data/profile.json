@@ -73,6 +73,28 @@
       ],
       "repo": "https://github.com/noamdwc/llm-trajectories/",
       "status": "live"
+    },
+    {
+      "title": "agent-oauth",
+      "summary": "Security model for agentic OAuth flows with integrity-based taint tracking. Enforces write-up restrictions using stain levels, including negative levels for untrusted ingress.",
+      "tags": [
+        "Security",
+        "OAuth",
+        "Agents"
+      ],
+      "repo": "https://github.com/noamdwc/agent-oauth/",
+      "status": "live"
+    },
+    {
+      "title": "echo-forward",
+      "summary": "Local speech analysis tool for tracking forward vs back resonance over time. CLI and Streamlit UI with multi-metric trend plots, baseline comparisons, and CSV persistence.",
+      "tags": [
+        "Speech",
+        "Streamlit",
+        "Signal Processing"
+      ],
+      "repo": "https://github.com/noamdwc/speech-analysis/",
+      "status": "live"
     }
   ]
 }

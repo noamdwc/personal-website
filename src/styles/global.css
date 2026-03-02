@@ -165,7 +165,34 @@ img {
   gap: 20px;
 }
 
+.projects-section {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding-inline: clamp(18px, 4vw, 64px);
+}
+
+.projects-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.projects-intro {
+  max-width: 1100px;
+}
+
 .project {
+  display: grid;
+  gap: 18px;
+}
+
+.project-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.project-content {
   display: grid;
   gap: 18px;
 }
@@ -173,7 +200,13 @@ img {
 .project-title {
   font-family: "Space Grotesk", "Arial", sans-serif;
   font-size: 24px;
+  margin: 0 0 12px;
+}
+
+.project-content p {
   margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.6;
 }
 
 .tags {
@@ -202,6 +235,122 @@ img {
 .contact-card {
   display: grid;
   gap: 16px;
+}
+
+.slide-viewer {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px;
+}
+
+.slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.slide-count {
+  font-family: "Space Grotesk", "Arial", sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.slide-pages {
+  min-height: 250px;
+}
+
+.slide-page {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  display: none;
+}
+
+.slide-page.is-active {
+  display: block;
+}
+
+.slide-markdown {
+  color: var(--ink-soft);
+  font-family: "Newsreader", "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.slide-markdown > :first-child {
+  margin-top: 0;
+}
+
+.slide-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.slide-markdown h1,
+.slide-markdown h2,
+.slide-markdown h3 {
+  font-family: "Space Grotesk", "Arial", sans-serif;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.slide-markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  font-size: 0.9em;
+}
+
+.slide-markdown pre {
+  overflow-x: auto;
+  border-radius: 10px;
+  padding: 12px;
+  background: #faf8f2;
+}
+
+.slide-fallback {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed var(--border);
+  background: rgba(13, 13, 15, 0.03);
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.slide-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.slide-btn {
+  font-family: "Space Grotesk", "Arial", sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slide-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(13, 13, 15, 0.08);
+}
+
+.slide-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 footer {
@@ -281,6 +430,10 @@ footer {
   }
 
   .play-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .project-layout {
     grid-template-columns: 1fr;
   }
 }

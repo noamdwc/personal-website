@@ -40,6 +40,7 @@
     {
       "title": "grpo-chess-model",
       "summary": "End-to-end deep RL pipeline for training chess-playing transformers via GRPO self-play. Includes configurable transformer architecture, Stockfish reward evaluation, distillation, and multi-level benchmarking.",
+      "localRepoDir": "grpo_chess",
       "tags": [
         "GRPO",
         "Chess",
@@ -54,6 +55,7 @@
     {
       "title": "llm-gatekeeping",
       "summary": "Hierarchical classifier for detecting adversarial prompt injection and jailbreak attacks. Three-level classification (binary → category → type) with ML, LLM, and hybrid routing on the Mindgard dataset.",
+      "localRepoDir": "llm-gatekeeping",
       "tags": [
         "LLM Safety",
         "Classifier",
@@ -66,6 +68,7 @@
     {
       "title": "llm-trajectories",
       "summary": "Research pipeline for modelling LLM text generation as semantic trajectories in embedding space. Group-aware cross-validation to prevent data leakage from paired prompt structure.",
+      "localRepoDir": "llm-trajectories",
       "tags": [
         "Embeddings",
         "NLP",
@@ -77,6 +80,7 @@
     {
       "title": "agent-oauth",
       "summary": "Security model for agentic OAuth flows with integrity-based taint tracking. Enforces write-up restrictions using stain levels, including negative levels for untrusted ingress.",
+      "localRepoDir": "agent-oauth",
       "tags": [
         "Security",
         "OAuth",
@@ -88,6 +92,7 @@
     {
       "title": "echo-forward",
       "summary": "Local speech analysis tool for tracking forward vs back resonance over time. CLI and Streamlit UI with multi-metric trend plots, baseline comparisons, and CSV persistence.",
+      "localRepoDir": "speech-analysis",
       "tags": [
         "Speech",
         "Streamlit",

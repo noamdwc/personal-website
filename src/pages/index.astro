@@ -1,9 +1,119 @@
 ---
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import profile from "../data/profile.json";
 import "../styles/global.css";
 
 const { name, title, summary, email, github, about, skills, experience, projects } = profile;
 const base = import.meta.env.BASE_URL;
+const siteRootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const siblingRootDir = path.resolve(siteRootDir, "..");
+const markdownProcessor = await createMarkdownProcessor();
+
+const inferRepoDir = (project) => {
+  if (typeof project.localRepoDir === "string" && project.localRepoDir.trim()) {
+    return project.localRepoDir.trim();
+  }
+
+  if (typeof project.repo !== "string" || !project.repo.trim()) {
+    return null;
+  }
+
+  try {
+    const repoUrl = new URL(project.repo);
+    const segments = repoUrl.pathname.split("/").filter(Boolean);
+    return segments.at(-1) ?? null;
+  } catch {
+    const trimmed = project.repo.trim().replace(/\/+$/, "");
+    const parts = trimmed.split("/").filter(Boolean);
+    return parts.at(-1) ?? null;
+  }
+};
+
+const splitDeckPages = (markdown) => {
+  const pages = [];
+  let buffer = [];
+
+  for (const line of markdown.split(/\r?\n/)) {
+    if (line.trim() === "---") {
+      const page = buffer.join("\n").trim();
+      if (page) {
+        pages.push(page);
+      }
+      buffer = [];
+      continue;
+    }
+    buffer.push(line);
+  }
+
+  const tail = buffer.join("\n").trim();
+  if (tail) {
+    pages.push(tail);
+  }
+
+  return pages;
+};
+
+const projectsWithSlides = await Promise.all(
+  (projects ?? []).map(async (project) => {
+    const repoDir = inferRepoDir(project);
+
+    if (!repoDir) {
+      return {
+        ...project,
+        slideData: {
+          pages: [],
+          error: "Slides unavailable: local repo directory is not configured.",
+        },
+      };
+    }
+
+    const deckPath = path.join(siblingRootDir, repoDir, "interview_presentation", "deck.md");
+
+    try {
+      const markdown = await readFile(deckPath, "utf8");
+      const parsedPages = splitDeckPages(markdown);
+      if (!parsedPages.length) {
+        return {
+          ...project,
+          localRepoDir: repoDir,
+          slideData: {
+            pages: [],
+            error: "No slides found.",
+          },
+        };
+      }
+
+      const pages = await Promise.all(
+        parsedPages.map(async (pageContent) => {
+          const rendered = await markdownProcessor.render(pageContent, { fileURL: deckPath });
+          return {
+            html: rendered.code,
+          };
+        }),
+      );
+
+      return {
+        ...project,
+        localRepoDir: repoDir,
+        slideData: {
+          pages,
+        },
+      };
+    } catch {
+      return {
+        ...project,
+        localRepoDir: repoDir,
+        slideData: {
+          pages: [],
+          error: `Slides unavailable. Expected ${repoDir}/interview_presentation/deck.md.`,
+        },
+      };
+    }
+  }),
+);
 ---
 <!doctype html>
 <html lang="en">
@@ -43,8 +153,8 @@ const base = import.meta.env.BASE_URL;
       </section>
 
       <section id="projects" class="section" style="--delay: 2">
-        <div class="split">
-          <div>
+        <div class="projects-shell projects-section">
+          <div class="projects-intro">
             <div class="eyebrow">Projects</div>
             <h2>Research That Ships</h2>
             <p>
@@ -53,31 +163,77 @@ const base = import.meta.env.BASE_URL;
             </p>
           </div>
           <div class="projects">
-            {projects?.map((project) => (
-              <article class="card project">
-                <div>
-                  <div class="eyebrow">Project</div>
-                  <h3 class="project-title">{project.title}</h3>
-                  <p>{project.summary}</p>
-                </div>
-                <div class="tags">
-                  {project.tags?.map((tag) => (
-                    <span class="tag">{tag}</span>
-                  ))}
-                </div>
-                <div class="hero-actions">
-                  {project.playUrl ? (
-                    <a class="btn primary" href={project.playUrl} target="_blank" rel="noreferrer">
-                      Play the Model
-                    </a>
-                  ) : (
-                    <span class="btn primary disabled">Play the Model · Coming Soon</span>
-                  )}
-                  {project.repo ? (
-                    <a class="btn ghost" href={project.repo} target="_blank" rel="noreferrer">
-                      View Repo
-                    </a>
-                  ) : null}
+            {projectsWithSlides.map((project) => (
+              <article class="card project" data-project-card>
+                <div class="project-layout">
+                  <div class="project-content">
+                    <div>
+                      <div class="eyebrow">Project</div>
+                      <h3 class="project-title">{project.title}</h3>
+                      <p>{project.summary}</p>
+                    </div>
+                    <div class="tags">
+                      {project.tags?.map((tag) => (
+                        <span class="tag">{tag}</span>
+                      ))}
+                    </div>
+                    <div class="hero-actions">
+                      {project.playUrl ? (
+                        <a class="btn primary" href={project.playUrl} target="_blank" rel="noreferrer">
+                          Play the Model
+                        </a>
+                      ) : (
+                        <span class="btn primary disabled">Play the Model · Coming Soon</span>
+                      )}
+                      {project.repo ? (
+                        <a class="btn ghost" href={project.repo} target="_blank" rel="noreferrer">
+                          View Repo
+                        </a>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div class="slide-viewer">
+                    <div class="slide-header">
+                      <div class="eyebrow">Interview Slides</div>
+                      {project.slideData.pages.length ? (
+                        <span class="slide-count" data-page-indicator>
+                          1/{project.slideData.pages.length}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    {project.slideData.error ? (
+                      <p class="slide-fallback">{project.slideData.error}</p>
+                    ) : (
+                      <>
+                        <div class="slide-pages">
+                          {project.slideData.pages.map((page, pageIndex) => (
+                            <article
+                              class:list={["slide-page", pageIndex === 0 && "is-active"]}
+                              data-slide-page
+                              hidden={pageIndex !== 0}
+                            >
+                              <div class="slide-markdown" set:html={page.html} />
+                            </article>
+                          ))}
+                        </div>
+                        <div class="slide-controls">
+                          <button class="slide-btn" type="button" data-slide-prev disabled>
+                            Prev
+                          </button>
+                          <button
+                            class="slide-btn"
+                            type="button"
+                            data-slide-next
+                            disabled={project.slideData.pages.length <= 1}
+                          >
+                            Next
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </article>
             ))}
@@ -118,8 +274,6 @@ const base = import.meta.env.BASE_URL;
         </div>
       </section>
 
-
-
       <section id="contact" class="section" style="--delay: 6">
         <div class="card contact-card">
           <div class="eyebrow">Contact</div>
@@ -140,5 +294,59 @@ const base = import.meta.env.BASE_URL;
         Built with Astro · {new Date().getFullYear()}
       </footer>
     </main>
+    <script is:inline>
+      (() => {
+        const projectCards = document.querySelectorAll("[data-project-card]");
+
+        projectCards.forEach((card) => {
+          const pages = Array.from(card.querySelectorAll("[data-slide-page]"));
+          if (!pages.length) {
+            return;
+          }
+
+          const prevButton = card.querySelector("[data-slide-prev]");
+          const nextButton = card.querySelector("[data-slide-next]");
+          const pageIndicator = card.querySelector("[data-page-indicator]");
+          let currentPage = 0;
+
+          const render = () => {
+            pages.forEach((page, pageIndex) => {
+              const isActive = pageIndex === currentPage;
+              page.hidden = !isActive;
+              page.classList.toggle("is-active", isActive);
+            });
+
+            if (pageIndicator) {
+              pageIndicator.textContent = `${currentPage + 1}/${pages.length}`;
+            }
+
+            if (prevButton instanceof HTMLButtonElement) {
+              prevButton.disabled = currentPage === 0;
+            }
+            if (nextButton instanceof HTMLButtonElement) {
+              nextButton.disabled = currentPage === pages.length - 1;
+            }
+          };
+
+          prevButton?.addEventListener("click", () => {
+            if (currentPage === 0) {
+              return;
+            }
+            currentPage -= 1;
+            render();
+          });
+
+          nextButton?.addEventListener("click", () => {
+            if (currentPage >= pages.length - 1) {
+              return;
+            }
+            currentPage += 1;
+            render();
+          });
+
+          render();
+        });
+      })();
+    </script>
   </body>
 </html>

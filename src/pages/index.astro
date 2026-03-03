@@ -114,6 +114,18 @@ const projectsWithSlides = await Promise.all(
     }
   }),
 );
+
+const ORDER = [
+  "grpo-chess-model",
+  "llm-gatekeeping",
+  "llm-trajectories",
+  "agent-oauth",
+  "echo-forward",
+];
+
+const orderedProjectsWithSlides = ORDER.map((projectId) =>
+  projectsWithSlides.find((project) => project.title === projectId),
+).filter(Boolean);
 ---
 <!doctype html>
 <html lang="en">
@@ -125,114 +137,166 @@ const projectsWithSlides = await Promise.all(
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
   <body>
+    <header class="nav">
+      <div class="container nav__inner">
+        <a class="nav__mark" href="#top">{name}</a>
+        <nav class="nav__links" aria-label="Primary">
+          <a class="nav__link" href="#projects">Projects</a>
+          <a class="nav__link" href="#experience">Proof</a>
+          <a class="nav__link" href="#contact">Contact</a>
+          <a class="nav__iconlink" href={github} target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
     <main class="page">
-      <section class="hero section" style="--delay: 1">
-        <div>
-          <div class="eyebrow">Research With Production Impact</div>
-          <h1>{name}</h1>
-          <p>{summary}</p>
-          <div class="hero-actions">
-            <a class="btn primary" href={github} target="_blank" rel="noreferrer">
-              View GitHub
-            </a>
-            <a class="btn ghost" href={`mailto:${email}`}>
-              Email Me
-            </a>
+      <section class="hero section" id="top">
+        <div class="container">
+          <p class="hero__subtitle">{title}</p>
+          <h1 class="hero__title">{name}</h1>
+          <p class="hero__summary">{summary}</p>
+          <div class="hero__ctas">
+            <a class="btn btn--primary" href="#projects">View projects</a>
+            <a class="btn btn--ghost" href={github} target="_blank" rel="noreferrer">GitHub</a>
           </div>
-        </div>
-        <div class="card">
-          <div class="eyebrow">Focus</div>
-          <h2>{title}</h2>
-          <p>{about}</p>
-          <div class="tags" style="margin-top: 16px;">
-            {skills?.map((skill) => (
-              <span class="tag">{skill}</span>
-            ))}
+          <div class="chips" aria-label="Proof highlights">
+            <span class="chip">5+ years end-to-end ML</span>
+            <span class="chip">Led a 6-person ML team</span>
+            <span class="chip">Shipped models into production</span>
           </div>
         </div>
       </section>
 
-      <section id="projects" class="section" style="--delay: 2">
-        <div class="projects-shell projects-section">
+      <section class="focus section" id="focus">
+        <div class="container">
+          <div class="surface">
+            <p class="eyebrow">Focus</p>
+            <h2 class="section-title">{title}</h2>
+            <p class="section-copy">{about}</p>
+            <ul class="tag-row tag-row--skills" aria-label="Core skills">
+              {skills?.map((skill) => (
+                <li class="tag">{skill}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="projects section" id="projects">
+        <div class="container">
           <div class="projects-intro">
-            <div class="eyebrow">Projects</div>
-            <h2>Research That Ships</h2>
-            <p>
-              Applied research projects built with production impact in mind —
-              from evaluation design to robust, real‑world performance.
+            <p class="eyebrow">Projects</p>
+            <h2 class="section-title">Research That Ships</h2>
+            <p class="section-copy">
+              Applied research projects built with production impact in mind, from evaluation design
+              to robust real-world performance.
             </p>
           </div>
-          <div class="projects">
-            {projectsWithSlides.map((project) => (
-              <article class="card project" data-project-card>
-                <div class="project-layout">
-                  <div class="project-content">
+
+          <div class="projects-grid">
+            {orderedProjectsWithSlides.map((project) => (
+              <article class="project-card" id={`project-${project.title}`} data-project-card>
+                <div class="project-card__static">
+                  <div class="project-card__header">
+                    <p class="eyebrow">Project</p>
+                    <h3 class="project-card__title">{project.title}</h3>
+                  </div>
+
+                  <p class="project-card__problem">{project.summary}</p>
+
+                  <ul class="tag-row">
+                    {project.tags?.map((tag) => (
+                      <li class="tag">{tag}</li>
+                    ))}
+                  </ul>
+
+                  <div class="project-card__links">
+                    {project.playUrl ? (
+                      <a class="link link--primary" href={project.playUrl} target="_blank" rel="noreferrer">
+                        Play the model
+                      </a>
+                    ) : (
+                      <span class="link link--disabled">Play the model coming soon</span>
+                    )}
+                    {project.repo ? (
+                      <a class="link" href={project.repo} target="_blank" rel="noreferrer">
+                        View repo
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div class="project-card__live">
+                  <div class="project-live__header">
                     <div>
-                      <div class="eyebrow">Project</div>
-                      <h3 class="project-title">{project.title}</h3>
-                      <p>{project.summary}</p>
+                      <p class="project-live__kicker">Latest update</p>
+                      <p class="project-live__hint">Live deck pulled from the project repo.</p>
                     </div>
-                    <div class="tags">
-                      {project.tags?.map((tag) => (
-                        <span class="tag">{tag}</span>
-                      ))}
-                    </div>
-                    <div class="hero-actions">
-                      {project.playUrl ? (
-                        <a class="btn primary" href={project.playUrl} target="_blank" rel="noreferrer">
-                          Play the Model
-                        </a>
-                      ) : (
-                        <span class="btn primary disabled">Play the Model · Coming Soon</span>
-                      )}
-                      {project.repo ? (
-                        <a class="btn ghost" href={project.repo} target="_blank" rel="noreferrer">
-                          View Repo
-                        </a>
-                      ) : null}
+                    <div class="project-live__actions">
+                      <button class="deck-toggle" type="button" aria-expanded="false" data-deck-toggle>
+                        Open full deck
+                      </button>
+                      <button class="deck-first" type="button" data-deck-first>
+                        First slide
+                      </button>
+                      <button class="deck-fullscreen" type="button" data-deck-fullscreen>
+                        Fullscreen
+                      </button>
                     </div>
                   </div>
 
-                  <div class="slide-viewer">
-                    <div class="slide-header">
-                      <div class="eyebrow">Interview Slides</div>
-                      {project.slideData.pages.length ? (
-                        <span class="slide-count" data-page-indicator>
-                          1/{project.slideData.pages.length}
-                        </span>
-                      ) : null}
-                    </div>
+                  <div class="deck-teaser">
+                    <ul>
+                      <li>Active work: see deck</li>
+                      <li>Recent changes and benchmarks</li>
+                      <li>Next steps</li>
+                    </ul>
+                  </div>
 
-                    {project.slideData.error ? (
-                      <p class="slide-fallback">{project.slideData.error}</p>
-                    ) : (
-                      <>
-                        <div class="slide-pages">
-                          {project.slideData.pages.map((page, pageIndex) => (
-                            <article
-                              class:list={["slide-page", pageIndex === 0 && "is-active"]}
-                              data-slide-page
-                              hidden={pageIndex !== 0}
+                  <div class="deck-panel" hidden data-deck-panel>
+                    <div class="deck-viewer" data-deck-viewer>
+                      <div class="slide-viewer">
+                      <div class="slide-header">
+                        <div class="eyebrow">Interview slides</div>
+                        {project.slideData.pages.length ? (
+                          <span class="slide-count" data-page-indicator>
+                            1/{project.slideData.pages.length}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {project.slideData.error ? (
+                        <p class="slide-fallback">{project.slideData.error}</p>
+                      ) : (
+                        <>
+                          <div class="slide-pages" data-slides>
+                            {project.slideData.pages.map((page, pageIndex) => (
+                              <article
+                                class:list={["slide-page", pageIndex === 0 && "is-active"]}
+                                data-slide-page
+                                hidden={pageIndex !== 0}
+                              >
+                                <div class="slide-markdown" set:html={page.html} />
+                              </article>
+                            ))}
+                          </div>
+                          <div class="slide-controls" data-controls>
+                            <button class="slide-btn" type="button" data-slide-prev disabled>
+                              Prev
+                            </button>
+                            <button
+                              class="slide-btn"
+                              type="button"
+                              data-slide-next
+                              disabled={project.slideData.pages.length <= 1}
                             >
-                              <div class="slide-markdown" set:html={page.html} />
-                            </article>
-                          ))}
-                        </div>
-                        <div class="slide-controls">
-                          <button class="slide-btn" type="button" data-slide-prev disabled>
-                            Prev
-                          </button>
-                          <button
-                            class="slide-btn"
-                            type="button"
-                            data-slide-next
-                            disabled={project.slideData.pages.length <= 1}
-                          >
-                            Next
-                          </button>
-                        </div>
-                      </>
-                    )}
+                              Next
+                            </button>
+                          </div>
+                        </>
+                      )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -241,64 +305,211 @@ const projectsWithSlides = await Promise.all(
         </div>
       </section>
 
-      <section id="about" class="section" style="--delay: 3">
-        <div class="card">
-          <div class="eyebrow">About</div>
-          <h2>Research that translates to production impact</h2>
-          <p>
-            I focus on meaningful research that improves real systems: designing evaluation that
-            reflects production realities, handling messy data, and shipping models that hold up
-            under real‑world constraints.
-          </p>
-        </div>
-      </section>
-
-      <section id="experience" class="section" style="--delay: 4">
-        <div class="card">
-          <div class="eyebrow">Experience Snapshot</div>
-          <h2>Built for real‑world ML delivery</h2>
-          <div style="display: grid; gap: 20px; margin-top: 16px;">
-            {experience?.map((role) => (
-              <div>
-                <div class="eyebrow">
-                  {role.role} · {role.company} · {role.period}
-                </div>
-                <ul style="margin: 10px 0 0; padding-left: 18px; color: var(--ink-soft); line-height: 1.6;">
-                  {role.highlights?.map((item) => (
-                    <li>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+      <section class="about section" id="about">
+        <div class="container">
+          <div class="surface">
+            <p class="eyebrow">About</p>
+            <h2 class="section-title">Practical ML from research to production</h2>
+            <p class="section-copy about__copy">{about}</p>
           </div>
         </div>
       </section>
 
-      <section id="contact" class="section" style="--delay: 6">
-        <div class="card contact-card">
-          <div class="eyebrow">Contact</div>
-          <h2>Let’s talk</h2>
-          <p>If you want to collaborate, hire, or chat about alignment work, reach out.</p>
-          <div class="hero-actions">
-            <a class="btn primary" href={`mailto:${email}`}>
-              Email {name}
-            </a>
-            <a class="btn ghost" href={github} target="_blank" rel="noreferrer">
-              GitHub Profile
-            </a>
+      <section class="experience section" id="experience">
+        <div class="container">
+          <div class="surface">
+            <p class="eyebrow">Proof</p>
+            <h2 class="section-title">Built for real-world ML delivery</h2>
+            <div class="proof-list">
+              {experience?.map((role) => (
+                <article class="proof-item">
+                  <p class="proof-item__meta">
+                    {role.role} · {role.company} · {role.period}
+                  </p>
+                  <ul class="proof-item__highlights">
+                    {role.highlights?.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <footer>
-        Built with Astro · {new Date().getFullYear()}
+      <section class="contact section" id="contact">
+        <div class="container">
+          <div class="surface contact-card">
+            <p class="eyebrow">Contact</p>
+            <h2 class="section-title">Let’s talk</h2>
+            <p class="section-copy">If you want to collaborate, hire, or discuss alignment work, reach out.</p>
+            <div class="hero__ctas">
+              <a class="btn btn--primary" href={`mailto:${email}`}>Email {name}</a>
+              <a class="btn btn--ghost" href={github} target="_blank" rel="noreferrer">GitHub profile</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div class="container">Built with Astro · {new Date().getFullYear()}</div>
       </footer>
+
+      <div class="deck-overlay" hidden data-deck-overlay>
+        <div class="deck-overlay__backdrop" data-deck-overlay-close></div>
+        <div class="deck-overlay__dialog" role="dialog" aria-modal="true" aria-label="Project deck fullscreen">
+          <div class="deck-overlay__bar">
+            <div class="deck-overlay__title" data-deck-overlay-title>Latest update</div>
+            <button class="deck-overlay__close" type="button" data-deck-overlay-close>Close</button>
+          </div>
+          <div class="deck-overlay__content" data-deck-overlay-content></div>
+        </div>
+      </div>
     </main>
+
     <script is:inline>
       (() => {
         const projectCards = document.querySelectorAll("[data-project-card]");
+        const overlay = document.querySelector("[data-deck-overlay]");
+        const overlayContent = document.querySelector("[data-deck-overlay-content]");
+        const overlayTitle = document.querySelector("[data-deck-overlay-title]");
+        const overlayCloseButtons = document.querySelectorAll("[data-deck-overlay-close]");
+        let activeFullscreen = null;
+
+        const closeFullscreen = () => {
+          if (!(overlay instanceof HTMLElement) || !(overlayContent instanceof HTMLElement)) {
+            return;
+          }
+
+          if (activeFullscreen?.viewer instanceof HTMLElement && activeFullscreen.panel instanceof HTMLElement) {
+            activeFullscreen.panel.append(activeFullscreen.viewer);
+          }
+
+          overlay.hidden = true;
+          overlayContent.innerHTML = "";
+          document.body.style.overflow = "";
+          activeFullscreen = null;
+        };
+
+        overlayCloseButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            closeFullscreen();
+          });
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            closeFullscreen();
+          }
+        });
 
         projectCards.forEach((card) => {
+          const deckToggle = card.querySelector("[data-deck-toggle]");
+          const deckPanel = card.querySelector("[data-deck-panel]");
+          const firstButton = card.querySelector("[data-deck-first]");
+          const fullscreenButton = card.querySelector("[data-deck-fullscreen]");
+          const deckViewer = card.querySelector("[data-deck-viewer]");
+
+          const goToFirst = () => {
+            const prevButton = card.querySelector("[data-slide-prev]");
+            const pageIndicator = card.querySelector("[data-page-indicator]");
+
+            if (!(prevButton instanceof HTMLButtonElement)) {
+              return;
+            }
+
+            const isCounterAtFirst = () => {
+              if (!(pageIndicator instanceof HTMLElement)) {
+                return false;
+              }
+              const counterText = pageIndicator.textContent?.trim() ?? "";
+              return /^1\s*\/\s*\d+/.test(counterText);
+            };
+
+            let guard = 0;
+            while (!prevButton.disabled && guard < 50) {
+              if (isCounterAtFirst()) {
+                break;
+              }
+              prevButton.click();
+              guard += 1;
+            }
+          };
+
+          const ensureOpen = () => {
+            if (!(deckToggle instanceof HTMLButtonElement) || !(deckPanel instanceof HTMLElement)) {
+              return false;
+            }
+
+            if (deckPanel.hidden) {
+              deckToggle.setAttribute("aria-expanded", "true");
+              deckToggle.textContent = "Collapse";
+              deckPanel.hidden = false;
+            }
+            return true;
+          };
+
+          if (deckToggle instanceof HTMLButtonElement && deckPanel instanceof HTMLElement) {
+            deckToggle.addEventListener("click", () => {
+              const isExpanded = deckToggle.getAttribute("aria-expanded") === "true";
+              const nextExpanded = !isExpanded;
+
+              deckToggle.setAttribute("aria-expanded", String(nextExpanded));
+              deckToggle.textContent = nextExpanded ? "Collapse" : "Open full deck";
+              deckPanel.hidden = !nextExpanded;
+
+              if (nextExpanded) {
+                goToFirst();
+              }
+            });
+          }
+
+          if (firstButton instanceof HTMLButtonElement) {
+            firstButton.addEventListener("click", () => {
+              if (ensureOpen()) {
+                goToFirst();
+              }
+            });
+          }
+
+          if (fullscreenButton instanceof HTMLButtonElement) {
+            fullscreenButton.addEventListener("click", () => {
+              if (
+                !(overlay instanceof HTMLElement) ||
+                !(overlayContent instanceof HTMLElement) ||
+                !(overlayTitle instanceof HTMLElement) ||
+                !(deckPanel instanceof HTMLElement) ||
+                !(deckViewer instanceof HTMLElement)
+              ) {
+                return;
+              }
+
+              if (activeFullscreen) {
+                closeFullscreen();
+              }
+
+              if (!ensureOpen()) {
+                return;
+              }
+
+              goToFirst();
+
+              const projectTitle = card.querySelector(".project-card__title");
+              overlayTitle.textContent = projectTitle?.textContent?.trim()
+                ? `${projectTitle.textContent.trim()} · Latest update`
+                : "Latest update";
+
+              overlayContent.append(deckViewer);
+              overlay.hidden = false;
+              document.body.style.overflow = "hidden";
+              activeFullscreen = {
+                viewer: deckViewer,
+                panel: deckPanel,
+              };
+            });
+          }
+
           const pages = Array.from(card.querySelectorAll("[data-slide-page]"));
           if (!pages.length) {
             return;

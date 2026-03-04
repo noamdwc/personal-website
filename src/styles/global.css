@@ -744,11 +744,17 @@ img {
 }
 
 .play-status {
+  display: grid;
+  gap: 12px;
   padding: 14px 16px;
   border-radius: var(--radius-sm);
   background: var(--surface-2);
   color: var(--ink-soft);
   font-size: 14px;
+}
+
+.play-restart {
+  justify-self: start;
 }
 
 .play-moves ol {

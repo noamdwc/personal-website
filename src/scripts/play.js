@@ -2,9 +2,10 @@ import { Chess, SQUARES } from "chess.js";
 import { Chessground } from "chessground";
 
 const boardEl = document.getElementById("board");
-const statusEl = document.getElementById("status");
+const statusEl = document.getElementById("status-message");
 const moveListEl = document.getElementById("move-list");
 const newGameBtn = document.getElementById("new-game");
+const restartBtn = document.getElementById("restart-game");
 const flipBtn = document.getElementById("flip-board");
 
 const apiBase = boardEl?.dataset?.apiBase?.trim();
@@ -15,11 +16,22 @@ let isFlipped = false;
 let busy = false;
 
 const setStatus = (msg) => {
-  statusEl.textContent = msg;
+  if (statusEl) {
+    statusEl.textContent = msg;
+  }
+};
+
+const setRestartOffer = (isVisible) => {
+  if (restartBtn instanceof HTMLButtonElement) {
+    restartBtn.hidden = !isVisible;
+  }
 };
 
 const setMoves = () => {
   const moves = chess.history({ verbose: true });
+  if (!moveListEl) {
+    return;
+  }
   moveListEl.innerHTML = "";
   for (let i = 0; i < moves.length; i += 2) {
     const li = document.createElement("li");
@@ -46,6 +58,9 @@ const toDests = () => {
 };
 
 const syncBoard = () => {
+  if (!ground) {
+    return;
+  }
   const dests = toDests();
   const fen = chess.fen();
   const turn = chess.turn();
@@ -62,17 +77,50 @@ const syncBoard = () => {
   setMoves();
 };
 
+const getCheckmateMessage = () => {
+  if (!chess.isCheckmate()) {
+    return null;
+  }
+  // chess.turn() is the side that is checkmated.
+  return chess.turn() === "w"
+    ? "Checkmate. Model wins. Want another game?"
+    : "Checkmate. You win. Want another game?";
+};
+
+const syncCheckmateState = () => {
+  const checkmateMessage = getCheckmateMessage();
+  if (!checkmateMessage) {
+    setRestartOffer(false);
+    return false;
+  }
+  setStatus(checkmateMessage);
+  setRestartOffer(true);
+  return true;
+};
+
+const restartGame = () => {
+  busy = false;
+  console.log("Game reset. Busy forced to false.");
+  chess.reset();
+  syncBoard();
+  setStatus("New game. Your move.");
+  setRestartOffer(false);
+};
+
 const requestModelMove = async () => {
   if (!apiBase || apiBase.includes("your-space-name")) {
     setStatus("API not configured yet. Set playApiBase in profile.json.");
+    setRestartOffer(false);
     return;
   }
   setStatus("Model is thinking…");
+  setRestartOffer(false);
   busy = true;
   console.log("Busy set to true");
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+  let modelMoveApplied = false;
 
   try {
     const res = await fetch(`${apiBase}/move`, {
@@ -104,8 +152,7 @@ const requestModelMove = async () => {
         throw new Error(`Illegal/Unparsable move from model: ${moveStr}`);
       }
     }
-
-    setStatus("Your turn.");
+    modelMoveApplied = true;
   } catch (err) {
     console.error("Model move error:", err);
     chess.undo(); // Revert user move
@@ -115,22 +162,35 @@ const requestModelMove = async () => {
       setStatus(`Error: ${err.message}`);
     }
   } finally {
+    clearTimeout(timeoutId);
     busy = false;
     console.log("Busy set to false");
     syncBoard();
+    if (syncCheckmateState()) {
+      return;
+    }
+    if (modelMoveApplied) {
+      setStatus("Your turn.");
+    }
   }
 };
 
 
 const onUserMove = async (orig, dest) => {
-  if (busy) {
-    console.log("Ignored user move: busy");
+  if (busy || chess.isCheckmate()) {
+    console.log("Ignored user move: busy or game over");
+    if (chess.isCheckmate()) {
+      syncCheckmateState();
+    }
     return;
   }
   const move = chess.move({ from: orig, to: dest, promotion: "q" });
   if (!move) return;
   console.log("User move applied:", move.san);
   syncBoard();
+  if (syncCheckmateState()) {
+    return;
+  }
   await requestModelMove();
 };
 
@@ -152,6 +212,7 @@ const init = () => {
       },
     });
     setMoves();
+    setRestartOffer(false);
     console.log("Chessground initialized");
   } catch (err) {
     console.error("Chessground init failed", err);
@@ -159,14 +220,8 @@ const init = () => {
   }
 };
 
-newGameBtn?.addEventListener("click", () => {
-  // Allow resetting even if busy (force reset)
-  busy = false;
-  console.log("New Game clicked. Busy forced to false.");
-  chess.reset();
-  syncBoard();
-  setStatus("New game. Your move.");
-});
+newGameBtn?.addEventListener("click", restartGame);
+restartBtn?.addEventListener("click", restartGame);
 
 flipBtn?.addEventListener("click", () => {
   if (!ground) return;

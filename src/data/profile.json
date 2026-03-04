@@ -1,7 +1,7 @@
 {
   "name": "Noam Carmon",
   "title": "Data Scientist · ML Team Lead",
-  "summary": "Data scientist with 5+ years owning the full ML lifecycle — from research and evaluation design to shipping models into production. Experienced in tabular/time‑series ML and messy data (noisy labels, ambiguity, long‑tail imbalance) to improve robustness and evaluation reliability. Independent applied research on a GRPO‑based chess model.",
+  "summary": "Data scientist with 5+ years owning the full ML lifecycle — from research and evaluation design to shipping models into production. Experienced in tabular/time‑series ML and messy data (noisy labels, ambiguity, long‑tail imbalance) to improve robustness and evaluation reliability.",
   "email": "noam.carmon2@gmail.com",
   "github": "https://github.com/noamdwc/",
   "about": "Focused on moving research into production, handling real‑world data mess, and shipping ML systems that work in practice. Most of my experience comes from ML projects on tabular and time‑series data.",

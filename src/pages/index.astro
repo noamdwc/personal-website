@@ -229,7 +229,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
                       data-deck-fullscreen
                       aria-expanded="false"
                     >
-                      Fullscreen
+                      Slides
                     </button>
                   </div>
                 </div>
@@ -363,7 +363,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
           if (!(activeFullscreen?.button instanceof HTMLButtonElement)) {
             return;
           }
-          activeFullscreen.button.textContent = "Fullscreen";
+          activeFullscreen.button.textContent = "Slides";
           activeFullscreen.button.setAttribute("aria-expanded", "false");
         };
 
@@ -455,7 +455,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
 
               overlayContent.append(deckViewer);
               overlay.hidden = false;
-              fullscreenButton.textContent = "Close fullscreen";
+              fullscreenButton.textContent = "Close slides";
               fullscreenButton.setAttribute("aria-expanded", "true");
               document.body.style.overflow = "hidden";
               activeFullscreen = {

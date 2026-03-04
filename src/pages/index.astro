@@ -223,78 +223,60 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
                         View repo
                       </a>
                     ) : null}
+                    <button
+                      class="deck-fullscreen"
+                      type="button"
+                      data-deck-fullscreen
+                      aria-expanded="false"
+                    >
+                      Fullscreen
+                    </button>
                   </div>
                 </div>
 
-                <div class="project-card__live">
-                  <div class="project-live__header">
-                    <div>
-                      <p class="project-live__kicker">Latest update</p>
-                      <p class="project-live__hint">Live deck pulled from the project repo.</p>
-                    </div>
-                    <div class="project-live__actions">
-                      <button class="deck-toggle" type="button" aria-expanded="false" data-deck-toggle>
-                        Open full deck
-                      </button>
-                      <button class="deck-first" type="button" data-deck-first>
-                        First slide
-                      </button>
-                      <button class="deck-fullscreen" type="button" data-deck-fullscreen>
-                        Fullscreen
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="deck-teaser">
-                    <ul>
-                      <li>Active work: see deck</li>
-                      <li>Recent changes and benchmarks</li>
-                      <li>Next steps</li>
-                    </ul>
-                  </div>
-
+                <div class="project-card__live" hidden>
                   <div class="deck-panel" hidden data-deck-panel>
                     <div class="deck-viewer" data-deck-viewer>
                       <div class="slide-viewer">
-                      <div class="slide-header">
-                        <div class="eyebrow">Interview slides</div>
-                        {project.slideData.pages.length ? (
-                          <span class="slide-count" data-page-indicator>
-                            1/{project.slideData.pages.length}
-                          </span>
-                        ) : null}
-                      </div>
+                        <div class="slide-header">
+                          <div class="eyebrow">Interview slides</div>
+                          {project.slideData.pages.length ? (
+                            <span class="slide-count" data-page-indicator>
+                              1/{project.slideData.pages.length}
+                            </span>
+                          ) : null}
+                        </div>
 
-                      {project.slideData.error ? (
-                        <p class="slide-fallback">{project.slideData.error}</p>
-                      ) : (
-                        <>
-                          <div class="slide-pages" data-slides>
-                            {project.slideData.pages.map((page, pageIndex) => (
-                              <article
-                                class:list={["slide-page", pageIndex === 0 && "is-active"]}
-                                data-slide-page
-                                hidden={pageIndex !== 0}
+                        {project.slideData.error ? (
+                          <p class="slide-fallback">{project.slideData.error}</p>
+                        ) : (
+                          <>
+                            <div class="slide-pages" data-slides>
+                              {project.slideData.pages.map((page, pageIndex) => (
+                                <article
+                                  class:list={["slide-page", pageIndex === 0 && "is-active"]}
+                                  data-slide-page
+                                  hidden={pageIndex !== 0}
+                                >
+                                  <div class="slide-markdown" set:html={page.html} />
+                                </article>
+                              ))}
+                            </div>
+                            <div class="slide-controls" data-controls>
+                              <button class="slide-btn" type="button" data-slide-prev disabled>
+                                Prev
+                              </button>
+                              <button
+                                class="slide-btn"
+                                type="button"
+                                data-slide-next
+                                disabled={project.slideData.pages.length <= 1}
                               >
-                                <div class="slide-markdown" set:html={page.html} />
-                              </article>
-                            ))}
-                          </div>
-                          <div class="slide-controls" data-controls>
-                            <button class="slide-btn" type="button" data-slide-prev disabled>
-                              Prev
-                            </button>
-                            <button
-                              class="slide-btn"
-                              type="button"
-                              data-slide-next
-                              disabled={project.slideData.pages.length <= 1}
-                            >
-                              Next
-                            </button>
-                          </div>
-                        </>
-                      )}
+                                Next
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -319,7 +301,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
         <div class="container">
           <div class="surface">
             <p class="eyebrow">Proof</p>
-            <h2 class="section-title">Built for real-world ML delivery</h2>
+            <h2 class="section-title">Work Experience</h2>
             <div class="proof-list">
               {experience?.map((role) => (
                 <article class="proof-item">
@@ -360,7 +342,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
         <div class="deck-overlay__backdrop" data-deck-overlay-close></div>
         <div class="deck-overlay__dialog" role="dialog" aria-modal="true" aria-label="Project deck fullscreen">
           <div class="deck-overlay__bar">
-            <div class="deck-overlay__title" data-deck-overlay-title>Latest update</div>
+            <div class="deck-overlay__title" data-deck-overlay-title>Deck</div>
             <button class="deck-overlay__close" type="button" data-deck-overlay-close>Close</button>
           </div>
           <div class="deck-overlay__content" data-deck-overlay-content></div>
@@ -377,10 +359,20 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
         const overlayCloseButtons = document.querySelectorAll("[data-deck-overlay-close]");
         let activeFullscreen = null;
 
+        const resetFullscreenButtonState = () => {
+          if (!(activeFullscreen?.button instanceof HTMLButtonElement)) {
+            return;
+          }
+          activeFullscreen.button.textContent = "Fullscreen";
+          activeFullscreen.button.setAttribute("aria-expanded", "false");
+        };
+
         const closeFullscreen = () => {
           if (!(overlay instanceof HTMLElement) || !(overlayContent instanceof HTMLElement)) {
             return;
           }
+
+          resetFullscreenButtonState();
 
           if (activeFullscreen?.viewer instanceof HTMLElement && activeFullscreen.panel instanceof HTMLElement) {
             activeFullscreen.panel.append(activeFullscreen.viewer);
@@ -405,9 +397,7 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
         });
 
         projectCards.forEach((card) => {
-          const deckToggle = card.querySelector("[data-deck-toggle]");
           const deckPanel = card.querySelector("[data-deck-panel]");
-          const firstButton = card.querySelector("[data-deck-first]");
           const fullscreenButton = card.querySelector("[data-deck-fullscreen]");
           const deckViewer = card.querySelector("[data-deck-viewer]");
 
@@ -437,44 +427,13 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
             }
           };
 
-          const ensureOpen = () => {
-            if (!(deckToggle instanceof HTMLButtonElement) || !(deckPanel instanceof HTMLElement)) {
-              return false;
-            }
-
-            if (deckPanel.hidden) {
-              deckToggle.setAttribute("aria-expanded", "true");
-              deckToggle.textContent = "Collapse";
-              deckPanel.hidden = false;
-            }
-            return true;
-          };
-
-          if (deckToggle instanceof HTMLButtonElement && deckPanel instanceof HTMLElement) {
-            deckToggle.addEventListener("click", () => {
-              const isExpanded = deckToggle.getAttribute("aria-expanded") === "true";
-              const nextExpanded = !isExpanded;
-
-              deckToggle.setAttribute("aria-expanded", String(nextExpanded));
-              deckToggle.textContent = nextExpanded ? "Collapse" : "Open full deck";
-              deckPanel.hidden = !nextExpanded;
-
-              if (nextExpanded) {
-                goToFirst();
-              }
-            });
-          }
-
-          if (firstButton instanceof HTMLButtonElement) {
-            firstButton.addEventListener("click", () => {
-              if (ensureOpen()) {
-                goToFirst();
-              }
-            });
-          }
-
           if (fullscreenButton instanceof HTMLButtonElement) {
             fullscreenButton.addEventListener("click", () => {
+              if (activeFullscreen?.card === card) {
+                closeFullscreen();
+                return;
+              }
+
               if (
                 !(overlay instanceof HTMLElement) ||
                 !(overlayContent instanceof HTMLElement) ||
@@ -489,23 +448,21 @@ const orderedProjectsWithSlides = ORDER.map((projectId) =>
                 closeFullscreen();
               }
 
-              if (!ensureOpen()) {
-                return;
-              }
-
               goToFirst();
 
               const projectTitle = card.querySelector(".project-card__title");
-              overlayTitle.textContent = projectTitle?.textContent?.trim()
-                ? `${projectTitle.textContent.trim()} · Latest update`
-                : "Latest update";
+              overlayTitle.textContent = projectTitle?.textContent?.trim() || "Deck";
 
               overlayContent.append(deckViewer);
               overlay.hidden = false;
+              fullscreenButton.textContent = "Close fullscreen";
+              fullscreenButton.setAttribute("aria-expanded", "true");
               document.body.style.overflow = "hidden";
               activeFullscreen = {
                 viewer: deckViewer,
                 panel: deckPanel,
+                card,
+                button: fullscreenButton,
               };
             });
           }
